@@ -1,4 +1,22 @@
 import { useImperativeHandle, useState } from "react";
+// import {BlobService, createBlobService} from "azure-storage"
+// import { response } from "express";
+
+
+//
+// var multer = require('multer')
+// var MulterAzureStorage = require('multer-azure-storage')
+// var upload = multer({
+//   storage: new MulterAzureStorage({
+//     azureStorageConnectionString: 'https://mystorageaccount.blob.core.windows.net/',
+//     azureStorageAccessKey: 'myaccesskey',
+//     azureStorageAccount: 'mystorageaccount',
+//     containerName: 'photos',
+//     containerSecurity: 'blob'
+//   })
+// })
+
+//
 
 const ImageUpload = () => {
   const [images, setImages] = useState([]);
@@ -9,21 +27,21 @@ const ImageUpload = () => {
 
   //###############################################################################################
 
-  // const fileToDataUri = (image) => {
-  //   return new Promise((res) => {
-  //     const reader = new FileReader();
-  //     const { type, name, size } = image;
-  //     reader.addEventListener("load", () => {
-  //       res({
-  //         base64: reader.result,
-  //         name: name,
-  //         type,
-  //         size: size,
-  //       });
-  //     });
-  //     reader.readAsDataURL(image);
-  //   });
-  // };
+  const fileToDataUri = (image) => {
+    return new Promise((res) => {
+      const reader = new FileReader();
+      const { type, name, size } = image;
+      reader.addEventListener("load", () => {
+        res({
+          base64: reader.result,
+          name: name,
+          type,
+          size: size,
+        });
+      });
+      reader.readAsDataURL(image);
+    });
+  };
 
   // function makeblob(b64Data, contentType, sliceSize) {
   //   contentType = contentType || "";
@@ -198,16 +216,37 @@ const ImageUpload = () => {
 
   const uploadImage = async (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      // const newImagesPromises = [];
-      // for (let i = 0; i < e.target.files.length; i++) {
-      //   newImagesPromises.push(fileToDataUri(e.target.files[i]));
-      // }
-      // const newImages = await Promise.all(newImagesPromises);
-      // console.log("new images", newImages);
-      // setImages([
-      //   ...images,
-      //   ...newImages.filter((image) => image != undefined),
-      // ]);
+      const newImagesPromises = [];
+      for (let i = 0; i < e.target.files.length; i++) {
+        newImagesPromises.push(fileToDataUri(e.target.files[i]));
+      }
+      const newImages = await Promise.all(newImagesPromises);
+      console.log("new images", newImages);
+      setImages([
+        ...images,
+        ...newImages.filter((image) => image != undefined),
+      ]);
+      const testFile = await fetch(newImages[0].base64);
+      const file = new File([testFile.blob()], "test.png", {
+        type: 'image/png'
+      });
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "docs_upload_example_us_preset")
+      fetch("https://api.cloudinary.com/v1_1/demo/image/upload", {
+        method: "post",
+        body: formData
+      }).then(res => res.json()).then(results => console.log(results))
+      // const blobService = createBlobService("DefaultEndpointsProtocol=https;AccountName=reducewastestorage;AccountKey=v8KoVU/bxyzlywv1fHmFvsJao/M4RBKbYXBY1L7nsXGeiDx6sVPRFx1TdXVq0UDsoPHQ8H9xSbZqnBgHsKlinQ==;EndpointSuffix=core.windows.net")
+      // blobService.createAppendBlobFromStream("reducewastecontainer", "testBlob", newImages[0].base64, newImages[0].base64.length, (err, result, response) => {
+      //   if (err){
+      //     console.log(err)
+      //   } else {
+      //     console.log(response)
+      //     console.log(result)
+      //   }
+      // })
+
       const data = JSON.stringify({
         url: "https://i2-prod.manchestereveningnews.co.uk/incoming/article19522330.ece/ALTERNATES/s1200/2_CD16940913.jpg"
       })
@@ -220,6 +259,13 @@ const ImageUpload = () => {
       }).then(res => res.json()).then(results => console.log(results))
     }
   }
+  // blob sas token
+  // sp=r&st=2021-04-08T14:53:46Z&se=2021-05-15T22:53:46Z&spr=https&sv=2020-02-10&sr=c&sig=KWa3%2BFJGHclFQO407O8I8cmqGNUeApZ9mRlVrgNIexw%3D
+  //blob url
+  //https://reducewastestorage.blob.core.windows.net/reducewastecontainer?sp=r&st=2021-04-08T14:53:46Z&se=2021-05-15T22:53:46Z&spr=https&sv=2020-02-10&sr=c&sig=KWa3%2BFJGHclFQO407O8I8cmqGNUeApZ9mRlVrgNIexw%3D
+  //BLOB_KEY=v8KoVU/bxyzlywv1fHmFvsJao/M4RBKbYXBY1L7nsXGeiDx6sVPRFx1TdXVq0UDsoPHQ8H9xSbZqnBgHsKlinQ==
+  //STORAGE_ACCOUNT=DefaultEndpointsProtocol=https;AccountName=reducewastestorage;AccountKey=v8KoVU/bxyzlywv1fHmFvsJao/M4RBKbYXBY1L7nsXGeiDx6sVPRFx1TdXVq0UDsoPHQ8H9xSbZqnBgHsKlinQ==;EndpointSuffix=core.windows.net
+
       //   const file = new File([result], "capture.png", {
       //     type: 'image/png'
       // });
