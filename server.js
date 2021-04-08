@@ -13,8 +13,9 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }))
 
 app.post("/api/ocr", async (req, res) => {
-  const test = await postToOCR(req.body);
-  console.log(test)
+  // console.log(req.body)
+  const test = await postToOCR(req.body.url);
+  res.status(200).json(test)
   // console.log(results)
 })
 
@@ -23,9 +24,3 @@ app.post("/api/ocr", async (req, res) => {
 app.listen(PORT, () => {
   console.log('App is listening on port:', PORT)
 })
-const testFunc = async () => {
-  const test = await postToOCR();
-console.log(test)
-}
-
-testFunc()

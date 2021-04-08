@@ -16,18 +16,19 @@ const ApiKeyCredentials = require("@azure/ms-rest-js").ApiKeyCredentials;
  * AUTHENTICATE
  * This single client is used for all examples.
  */
-const key = process.env.API_KEY;
-const endpoint =
-  "https://reducewastereader.cognitiveservices.azure.com/vision/v3.0/read/analyze";
-const data = {
-  url:
-    "https://i2-prod.manchestereveningnews.co.uk/incoming/article19522330.ece/ALTERNATES/s1200/2_CD16940913.jpg",
-};
+ const key = process.env.API_KEY;
+ const endpoint =
+   "https://reducewastereader.cognitiveservices.azure.com/vision/v3.0/read/analyze";
+
 
 
 const timer = ms => new Promise(res => setTimeout(res, ms))//creating a reusable blocking timer that can be used in for/while loops
 
-const postToOCR = async (binaryImageData) => {
+const postToOCR = async (url) => {
+  const data = {
+    url:
+      url
+  };
   const results = await axios({
     method: "post",
     url: endpoint,
@@ -64,10 +65,10 @@ const postToOCR = async (binaryImageData) => {
       })
       await timer(3000); // then the created Promise can be awaited
     }
-    console.log(realResults.data.analyzeResult.readResults[0].lines)
+    return (realResults?.data?.analyzeResult?.readResults[0]?.lines || "Error: Could not obtain data from Azure")
   }
-  load();
-    
+  const finalResponseFromAzure = await load();
+  return finalResponseFromAzure
   
 };
 

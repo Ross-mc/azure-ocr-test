@@ -196,53 +196,50 @@ const ImageUpload = () => {
 
   // //#################################################
 
-  // // const uploadImage = async (e) => {
-  // //   if (e.target.files && e.target.files.length > 0) {
-  // //     const newImagesPromises = [];
-  // //     for (let i = 0; i < e.target.files.length; i++) {
-  // //       newImagesPromises.push(fileToDataUri(e.target.files[i]));
-  // //     }
-  // //     const newImages = await Promise.all(newImagesPromises);
-  // //     console.log("new images", newImages);
-  // //     setImages([
-  // //       ...images,
-  // //       ...newImages.filter((image) => image != undefined),
-  // //     ]);
-  // //     const response = await fetch(newImages[0].base64);
-  // //     const blob = await response.blob();
-  // //     const file = new File([blob], "capture.png", {
-  // //       type: "image/png"
-  // //     })
-  // //     console.log(file);
-  // //     const please = await fetch("https://reducewastereader.cognitiveservices.azure.com/vision/v3.0/read/analyze", {
-  // //       method: "POST",
-  // //       headers: {
-  // //         "Content-Type": "application/octet-stream",
-  // //         "Ocp-Apim-Subscription-Key": 
-  // //       },
-  // //       body: {data: file}
-  // //     });
-  // //     console.log(please)
-  // //     //   const file = new File([result], "capture.png", {
-  // //     //     type: 'image/png'
-  // //     // });
-  // //     // console.log(file)
-  // //     //   const fd = new FormData();
-  // //     //   fd.append('image', file);
-  // //     //   fetch(, {
-  // //     //     // headers: {
-  // //     //     //   "Content-Type": "application/json",
-  // //     //     // },
-  // //     //     method: "POST",
-  // //     //     data: fd,
-  // //     //     processData: false,
-  // //     //     contentType: false
-  // //     //   });
-  // //     // const reader = new FileReader();
-  // //     // reader.addEventListener("loadend", () => {
-  // //     //   const formData = new FormData()
-  // //     // })
-  // //     // })
+  const uploadImage = async (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      // const newImagesPromises = [];
+      // for (let i = 0; i < e.target.files.length; i++) {
+      //   newImagesPromises.push(fileToDataUri(e.target.files[i]));
+      // }
+      // const newImages = await Promise.all(newImagesPromises);
+      // console.log("new images", newImages);
+      // setImages([
+      //   ...images,
+      //   ...newImages.filter((image) => image != undefined),
+      // ]);
+      const data = JSON.stringify({
+        url: "https://i2-prod.manchestereveningnews.co.uk/incoming/article19522330.ece/ALTERNATES/s1200/2_CD16940913.jpg"
+      })
+      fetch("/api/ocr", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: data
+      }).then(res => res.json()).then(results => console.log(results))
+    }
+  }
+      //   const file = new File([result], "capture.png", {
+      //     type: 'image/png'
+      // });
+      // console.log(file)
+      //   const fd = new FormData();
+      //   fd.append('image', file);
+      //   fetch(, {
+      //     // headers: {
+      //     //   "Content-Type": "application/json",
+      //     // },
+      //     method: "POST",
+      //     data: fd,
+      //     processData: false,
+      //     contentType: false
+      //   });
+      // const reader = new FileReader();
+      // reader.addEventListener("loadend", () => {
+      //   const formData = new FormData()
+      // })
+      // })
 
   // //     //     let reader = new FileReader();
 
@@ -298,7 +295,6 @@ const ImageUpload = () => {
 
   // //   const blob = new Blob(byteArrays, {type: contentType});
   // //   return blob;
-  // // }
 
   return (
     <input
